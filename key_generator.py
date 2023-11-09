@@ -27,6 +27,7 @@ def generate_pack(counter : int):
     )
     insert_into_db(keys = [root_key], status = 1)
     insert_into_db(keys = users_keys, status = 0)
+
 def generate_key() -> str:
     key : str = ""
     for i in range(1, 30):
@@ -57,6 +58,6 @@ def insert_into_db(keys : list, status : int) -> None:
         db.execute(query = "INSERT INTO keys (value, status) VALUES ('{}', {})".format(key, status))
 
 
-for i in range(0, 1000):
+for i in range(0, 100000):
     generate_pack(counter = i)
 print(db.execute("SELECT * FROM keys"))
