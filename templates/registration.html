@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    
+    <form>
+        <div id="registration">
+            <input type="text" id="key-input" placeholder="XXXX-XXXX-XXXX-XXXX">
+            <input type="text" id="company-input" placeholder="Your company">
+            <input type="text" id="email-input" placeholder="Email">
+            <input type="password" id="password-input" placeholder="password">
+            <button id="submit-button">Submit</button>
+        </div>
+        <div id="authorization">
+            <a id="go-for-authorization" href="/authorization">Авторизоваться</a>
+        </div>
+    </form>
+
+    <script>
+        const REGISTRATION_API = "/api/v1/registration"
+        let keyInput = document.querySelector("#key-input");
+            companyInput = document.querySelector("#company-input");
+            emailInput = document.querySelector("#email-input");
+            passwordInput = document.querySelector("#password-input");
+        let submitButton = document.querySelector("#submit-button");
+
+        submitButton.addEventListener("click", async (e) => {
+            e.preventDefault();
+            let result = await fetch(
+                REGISTRATION_API,
+                {
+                    method : "POST",
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body : JSON.stringify({
+                        key : keyInput.value,
+                        company : companyInput.value,
+                        email : emailInput.value,
+                        password : passwordInput.value,
+                    }),
+                },
+            ).then(request => request.json());
+            console.log(result.result);
+            if (result.result === 0)
+            {
+                console.log("Зарегестрированно");
+                document.body.innerHTML += "<p>Успешно зарегестрированно!</p>";
+            }
+            else
+            {
+                console.log("Не зарегестрированно");
+                document.body.innerHTML += "<p>Неверные данные!</p>";
+            }
+        })
+    </script>
+</body>
+</html>

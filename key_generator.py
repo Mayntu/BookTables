@@ -1,7 +1,9 @@
 from string import ascii_uppercase
 from random import randint
 from os import path, getcwd
+from threading import Thread
 from services.database.database import db
+from services.database.keys import Key, to_key, to_keys
 
 NUMS : str = "1234567890"
 
@@ -16,17 +18,11 @@ USERS:
 
 def generate_pack(counter : int):
     root_key : str = generate_key()
-    users_keys : list = []
-    for i in range(0, 9):
-        users_keys.append(generate_key())
+    users_keys : list = [generate_key() for x in range(0, 9)]
     
-    insert_into_file(
-        root_key = root_key,
-        users_keys = users_keys,
-        counter = counter,
-    )
+    Thread(target = insert_into_file, args = [root_key, users_keys, counter,]).start()
     insert_into_db(keys = [root_key], status = 1)
-    insert_into_db(keys = users_keys, status = 0)
+    Thread(target = insert_into_db, args = [users_keys, 0,]).start()
 
 def generate_key() -> str:
     key : str = ""
@@ -54,10 +50,21 @@ def insert_into_file(root_key : str, users_keys : list, counter) -> None:
 
 
 def insert_into_db(keys : list, status : int) -> None:
-    for key in keys:
-        db.execute(query = "INSERT INTO keys (value, status) VALUES ('{}', {})".format(key, status))
+    query_values : str = ", ".join(f"('{key}', {status})" for key in keys)
+    db.execute(f"INSERT INTO keys (value, status) VALUES {query_values}", is_commit=True)
 
 
 for i in range(0, 100000):
-    generate_pack(counter = i)
-print(db.execute("SELECT * FROM keys"))
+    Thread(target = generate_pack, args = [i,]).start()
+
+# @to_keys
+# def get_keys() -> list:
+#     return db.execute("SELECT * FROM keys")
+
+# @to_key
+# def get_key(id : int) -> list:
+#     return db.execute("SELECT * FROM keys WHERE id='{}'".format(id))
+
+# print(db.execute("SELECT * FROM keys"))
+# print(get_keys())
+# print(get_key(id = 5))

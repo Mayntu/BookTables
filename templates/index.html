@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная</title>
+</head>
+<body>
+    <button type="button" id="deauth">Выход</button>
+    <br>
+    <form>
+        <input type="text" id="name" placeholder="Наименование">
+        <textarea id="content" placeholder="Контент"></textarea>
+        <button type="button" id="add-post">Добавить товар</button>
+    </form>
+    <input type="text" id="id-to-delete" placeholder="Удалить по id">
+    <button id="delete-id-button">Удалить</button>
+    <br>
+    <h1>Все товары</h1>
+    <div class="products"></div>
+    <script>
+
+        const LOAD_PRODUCTS_URL = "/api/v1/getAllProducts";
+        const goods          = document.querySelector(".products");
+
+        let getAllProducts = async () => {
+            let result = await fetch(
+                LOAD_PRODUCTS_URL,
+                {
+                    method: "POST",
+                    headers:{
+                        "Content-Type" : "application/json",
+                    }
+                }
+            ).then((response) => response.json());
+
+            result = result.result;
+            result.forEach((good) => {
+                goods.innerHTML += "<br><hr>"
+                goods.innerHTML += `<p>Наименование: ${good[2]}</p>`;
+                goods.innerHTML += `<p>Номер: ${good[0]}</p>`;
+                goods.innerHTML += `<p>ID Автора: ${good[1]}</p>`;
+                goods.innerHTML += `<p>Контент: ${good[3]}</p>`;
+                goods.innerHTML += `<p>Дата: ${good[4]}</p>`;
+            });
+        }
+
+        getAllProducts();
+
+
+        const ADD_PRODUCT_URL = "/api/v1/insertProduct";
+        const name         = document.querySelector("#name"),
+              content      = document.querySelector("#content"),
+              add          = document.querySelector("#add-post");
+
+        add.onclick = async () => {
+            let result = await fetch(
+                ADD_PRODUCT_URL,
+                {
+                    method: "POST",
+                    headers:{
+                        "Content-Type" : "application/json",
+                    },
+                    body: JSON.stringify({
+                        "title"      : name.value,
+                        "content"   : content.value,
+                    }),
+                },
+            ).then((response) => response.json());
+
+            if (result.result == 0){
+                location.reload();
+            }
+        }
+
+
+
+        const DEAUTH_URL = "/api/v1/deauth"; //url api
+        const deauthButton = document.querySelector("#deauth"); //кнопка выхода
+
+        let deauth = async () => {
+            let result = await fetch(
+                DEAUTH_URL,
+                {
+                    method: "POST",
+                }
+            ).then((response) => response.json());
+            if (result.result == 0){
+                location.reload();
+            }else{
+                console.error("Ошибка деавторизации пользователя!")
+            }
+        }
+
+        deauthButton.onclick = async () => {
+            await deauth();
+        }
+
+        
+        const inputId             = document.querySelector("#id-to-delete"),
+              deleteIdButton      = document.querySelector("#delete-id-button");
+        
+        
+        let deleteId = async () => {
+            let result = await fetch(
+                "/api/v1/deleteProduct",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type" : "application/json",
+                    },
+                    body: JSON.stringify({
+                        "id" : inputId.value,
+                    }),
+                },
+            ).then((response) => response.json());
+        }
+        deleteIdButton.onclick = async () => {
+            await deleteId();
+        }
+
+    </script>
+</body>
+</html>

@@ -1,14 +1,7 @@
 from services.database.database import db
 
-def register(data : dict) -> int:
-    if not is_in_db(data = data) == 0:
-        return 1
-    try:
-        ...
-    except:
-        return 2
-    
-    return 0
+def authorize(data : dict) -> int:
+    return is_in_db(data = data)
 
 
 def is_in_db(data : dict) -> int:

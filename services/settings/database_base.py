@@ -9,13 +9,14 @@ TABLES : dict = {
     "users" : {
         "id" : "INTEGER PRIMARY KEY AUTOINCREMENT,",
         "status" : "INTEGER NOT NULL,",
-        "company" : "VARCHAR(16),",
+        "company" : "VARCHAR(16) NOT NULL,",
         "email" : "VARCHAR(32) NOT NULL,",
         "password" : "VARCHAR(32) NOT NULL",
     },
     "products" : {
         "id" : "INTEGER PRIMARY KEY AUTOINCREMENT,",
         "author" : "INTEGER NOT NULL,",
+        "company" : "VARCHAR(16) NOT NULL,",
         "title" : "VARCHAR(32) NOT NULL,",
         "content" : "VARCHAR(512) NOT NULL,",
         "date" : "VARCHAR(16) NOT NULL",

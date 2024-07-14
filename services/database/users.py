@@ -1,4 +1,5 @@
 from typing import NamedTuple
+from services.database.database import db
 
 class User(NamedTuple):
     id : int
@@ -37,3 +38,7 @@ def to_users(func) -> object:
             ))
         return users
     return wrapper
+
+@to_user
+def get_user_by_email(email : str) -> User:
+    return db.execute("SELECT * FROM users WHERE email='{}'".format(email))

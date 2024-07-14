@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    
+    <form>
+        <div id="authorization">
+            <input type="text" id="email-input" placeholder="Email">
+            <input type="password" id="password-input" placeholder="password">
+            <button id="submit-button">Submit</button>
+        </div>
+        <div id="registration">
+            <a id="go-for-registration" href="/registration">Зарегестрироваться</a>
+        </div>
+    </form>
+
+    <script>
+        const AUTHORIZATION_API = "/api/v1/authorization"
+        let emailInput = document.querySelector("#email-input");
+            passwordInput = document.querySelector("#password-input");
+        let submitButton = document.querySelector("#submit-button");
+
+        submitButton.addEventListener("click", async (e) => {
+            e.preventDefault();
+            let result = await fetch(
+                AUTHORIZATION_API,
+                {
+                    method : "POST",
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body : JSON.stringify({
+                        email : emailInput.value,
+                        password : passwordInput.value,
+                    }),
+                },
+            ).then(request => request.json());
+            if (result.result === 0)
+            {
+                document.body.innerHTML += "<p>Успешно авторизированно!</p>";
+            }
+            else
+            {
+                document.body.innerHTML += "<p>Неверные данные!</p>";
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import sqlite3
+import threading
 from services.settings.database_base import DB_NAME, TABLES
 
 
@@ -9,10 +10,12 @@ class DB:
             check_same_thread = False,
         )
         self.cursor = self.connection.cursor()
+        self.lock = threading.Lock()
         self.create_tables()
     
     def execute(self, query : str, is_commit : bool = False) -> object:
         try:
+            self.lock.acquire(True)
             self.cursor.execute(query)
             if is_commit:
                 self.connection.commit()
@@ -21,6 +24,8 @@ class DB:
         except Exception as e:
             print(e)
             return 1
+        finally:
+            self.lock.release()
     
     def create_tables(self) -> object:
         for table_name in TABLES:
